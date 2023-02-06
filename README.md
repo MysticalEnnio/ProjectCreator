@@ -1,4 +1,4 @@
-Background: Gray-50
+Background: Gray-100
 Card-Background: white
 Text: Gray-500
 Text-Accent: Gray-900
