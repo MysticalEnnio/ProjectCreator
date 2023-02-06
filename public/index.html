@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="css/style.css" />
+        <script src="js/script.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <title>Document</title>
+    </head>
+    <body>
+        <div id="contentWrapper" class="w-screen h-screen p-4 bg-gray-50">
+            <div id="header" class="p-2 mb-24">
+                <h1
+                    id="heading"
+                    class="text-[8vmin] w-max mx-auto text-gray-900"
+                >
+                    Project Creator
+                </h1>
+            </div>
+            <div
+                id="options"
+                class="w-2/3 mx-auto bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 2xl:col-span-2"
+            >
+                <input
+                    type="text"
+                    id="input-1"
+                    class="block w-2/3 mx-auto mb-12 text-center bg-transparent text-gray-900 placeholder:text-gray-500 border-2 border-t-0 border-gray-900 rounded-b-md p-2 text-4xl focus:outline-none"
+                    placeholder="Project Name"
+                />
+                <select
+                    id="templates"
+                    class="bg-emerald-400 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                >
+                    <option selected>Choose a template</option>
+                </select>
+            </div>
+        </div>
+    </body>
+</html>
