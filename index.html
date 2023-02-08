@@ -8,10 +8,27 @@
         <script src="https://cdn-tailwindcss.vercel.app/"></script>
         <script src="//cdn.jsdelivr.net/npm/sweetalert2"></script>
         <script type="module">
+            const params = new Proxy(
+                new URLSearchParams(window.location.search),
+                {
+                    get: (searchParams, prop) => searchParams.get(prop),
+                }
+            );
+
+            if (!params.code) {
+                window.location.href =
+                    "https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=10e8db4ed250e4ac72a0";
+            }
             import { Octokit } from "https://cdn.skypack.dev/@octokit/core";
+            import { createOAuthUserAuth } from "https://cdn.skypack.dev/@octokit/auth-oauth-user";
 
             const octokit = new Octokit({
-                auth: `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`,
+                authStrategy: createOAuthUserAuth,
+                auth: {
+                    clientId: "10e8db4ed250e4ac72a0",
+                    clientSecret: "cc14f5e149f83526df2b99ed2c9ace5a41c604e6",
+                    code: params.code,
+                },
             });
 
             window.creteRepoFromTemplate = async function (

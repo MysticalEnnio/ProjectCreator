@@ -1,15 +1,5 @@
 let templateRepos = [];
 let templates = [];
-/*
-const templates = [
-    { name: "Html, Js, Css (Basic)", value: "html-js-css-basic" },
-    { name: "Html, Js, Css (Advanced)", value: "html-js-css-advanced" },
-    { name: "Html, Js, Css (Tailwind)", value: "html-js-css-tailwind" },
-    { name: "NodeJs (Basic)", value: "nodejs-basic" },
-    { name: "NodeJs (Express)", value: "nodejs-express" },
-    { name: "Nuxt", value: "nuxt" },
-];
-*/
 
 window
     .getRepos()
@@ -34,6 +24,17 @@ window
             icon: "error",
         });
     });
+
+/*
+const templates = [
+    { name: "Html, Js, Css (Basic)", value: "html-js-css-basic" },
+    { name: "Html, Js, Css (Advanced)", value: "html-js-css-advanced" },
+    { name: "Html, Js, Css (Tailwind)", value: "html-js-css-tailwind" },
+    { name: "NodeJs (Basic)", value: "nodejs-basic" },
+    { name: "NodeJs (Express)", value: "nodejs-express" },
+    { name: "Nuxt", value: "nuxt" },
+];
+*/
 
 const templateContainer = document.getElementById("templates");
 const projectNameInputElement = document.getElementById("projectNameInput");
