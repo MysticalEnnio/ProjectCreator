@@ -1,29 +1,69 @@
-let templateRepos = [];
-let templates = [];
+const params = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams, prop) => searchParams.get(prop),
+});
 
-window
-    .getRepos()
-    .then((response) => {
-        templateRepos = response.data.filter((repo) => repo.is_template);
-        templateRepos.forEach((repo) => {
-            templates.push({
-                name: repo.description,
-                value: repo.name,
+if (!params.code) {
+    window.location.href =
+        "https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=10e8db4ed250e4ac72a0";
+}
+
+console.log("ParamsCode is given");
+
+fetch("http://127.0.0.1:5000/https://github.com/login/oauth/access_token", {
+    //method post
+    method: "POST",
+    //no cors
+    headers: {
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+        client_id: "10e8db4ed250e4ac72a0",
+        client_secret: "cc14f5e149f83526df2b99ed2c9ace5a41c604e6",
+        code: params.code,
+    }),
+})
+    .then((response) => response.json())
+    .then((data) => {
+        if (!data.access_token) {
+            window.location.href =
+                "https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=10e8db4ed250e4ac72a0";
+        }
+        window.initOctoKit(data.access_token);
+        console.log(data);
+        window
+            .getRepos()
+            .then((response) => {
+                templateRepos = response.data.filter(
+                    (repo) => repo.is_template
+                );
+                templateRepos.forEach((repo) => {
+                    templates.push({
+                        name: repo.description,
+                        value: repo.name,
+                    });
+                });
+                templates.forEach((template) => {
+                    addTemplateOption(template);
+                });
+                console.log(templates);
+            })
+            .catch((err) => {
+                console.error(err);
+                swal.fire({
+                    title: "Error",
+                    text: "An error occured while fetching your repositories",
+                    icon: "error",
+                });
             });
-        });
-        templates.forEach((template) => {
-            addTemplateOption(template);
-        });
-        console.log(templates);
     })
     .catch((err) => {
         console.error(err);
-        swal.fire({
-            title: "Error",
-            text: "An error occured while fetching your repositories",
-            icon: "error",
-        });
     });
+
+let templateRepos = [];
+let templates = [];
 
 /*
 const templates = [
@@ -105,6 +145,23 @@ document.querySelectorAll(".visibilitySwitchButton").forEach((e) => {
     });
 });
 
+function createCodeSpaceForRepository(id) {
+    window
+        .createCodespaceForRepo(id)
+        .then((response) => {
+            console.log("Codespace created successfully", response);
+            window.location.href = response.data.web_url;
+        })
+        .catch((err) => {
+            console.log(err);
+            swal.fire({
+                title: "Error",
+                text: "An error occured while creating the codespace",
+                icon: "error",
+            });
+        });
+}
+
 createButton.addEventListener("click", async () => {
     if (projectNameInputState.value != 2) {
         swal.fire({
@@ -128,8 +185,15 @@ createButton.addEventListener("click", async () => {
             projectNameInputElement.value,
             visibilitySwitchElement.classList.contains("left-1")
         )
-        .then((response) => {
+        .then(async (response) => {
             console.log("Repository created successfully", response);
+            new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve();
+                }, 3000);
+            }).then(() => {
+                createCodeSpaceForRepository(response.data.id);
+            });
         })
         .catch((err) => {
             console.log(err);
