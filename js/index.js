@@ -9,7 +9,7 @@ if (!params.code) {
 
 console.log("ParamsCode is given");
 
-fetch("http://127.0.0.1:5000/https://github.com/login/oauth/access_token", {
+fetch("https://cors-proxy-bngj.onrender.com/https://github.com/login/oauth/access_token", {
     //method post
     method: "POST",
     //no cors
