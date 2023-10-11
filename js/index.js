@@ -2,33 +2,47 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
     get: (searchParams, prop) => searchParams.get(prop),
 });
 
-if (!params.code) {
+if (params.error) {
+    swal.fire({
+        title: "Error",
+        text:
+            "An error occured while authenticating: " +
+            params.error_description,
+        icon: "error",
+    });
+} else if (!params.code) {
     window.location.href =
-        "https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=10e8db4ed250e4ac72a0";
+        "https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=10e8db4ed250e4ac72a0&redirect_uri=" +
+        window.location.href;
 }
 
 console.log("ParamsCode is given");
 
-fetch("https://cors-proxy-bngj.onrender.com/https://github.com/login/oauth/access_token", {
-    //method post
-    method: "POST",
-    //no cors
-    headers: {
-        Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-        client_id: "10e8db4ed250e4ac72a0",
-        client_secret: "cc14f5e149f83526df2b99ed2c9ace5a41c604e6",
-        code: params.code,
-    }),
-})
+fetch(
+    "https://cors-proxy-bngj.onrender.com/https://github.com/login/oauth/access_token",
+    {
+        //method post
+        method: "POST",
+        //no cors
+        headers: {
+            Accept: "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            client_id: "10e8db4ed250e4ac72a0",
+            client_secret: "cc14f5e149f83526df2b99ed2c9ace5a41c604e6",
+            code: params.code,
+            redirect_uri: window.location.href,
+        }),
+    }
+)
     .then((response) => response.json())
     .then((data) => {
         if (!data.access_token) {
             window.location.href =
-                "https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=10e8db4ed250e4ac72a0";
+                "https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=10e8db4ed250e4ac72a0&redirect_uri=" +
+                window.location.href;
         }
         window.initOctoKit(data.access_token);
         console.log(data);
