@@ -98,6 +98,7 @@ var log = (input) => {
 const templateContainer = document.getElementById("templates");
 const projectNameInputElement = document.getElementById("projectNameInput");
 const visibilitySwitchElement = document.getElementById("visibilitySwitch");
+const locationSwitchElement = document.getElementById("locationSwitch");
 const createButton = document.getElementById("createButton");
 let projectNameInputState = { value: 0 };
 
@@ -152,7 +153,7 @@ projectNameInputElement.addEventListener("input", (e) => {
     }
 });
 
-document.querySelectorAll(".visibilitySwitchButton").forEach((e) => {
+document.querySelectorAll(".switchButton").forEach((e) => {
     e.addEventListener("click", () => {
         console.log(e.parentElement.parentElement.lastElementChild);
         e.parentElement.parentElement.lastElementChild.classList.toggle(
@@ -222,6 +223,14 @@ createButton.addEventListener("click", async () => {
         .then(async (response) => {
             console.log("Repository created successfully", response);
             log("Repository created successfully");
+            if (!locationSwitchElement.classList.contains("left-1")) {
+                //copy clone git url to clipboard
+                await navigator.clipboard.writeText(
+                    `git clone ${response.data.clone_url}`
+                );
+                log("git clone url command to clipboard");
+                return;
+            }
             log("Creating codespace...");
             new Promise((resolve) => {
                 setTimeout(() => {
