@@ -2,18 +2,17 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
     get: (searchParams, prop) => searchParams.get(prop),
 });
 
-if (params.error) {
-    swal.fire({
-        title: "Error",
-        text:
-            "An error occured while authenticating: " +
-            params.error_description,
-        icon: "error",
-    });
-} else if (!params.code) {
-    window.location.href =
-        "https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=10e8db4ed250e4ac72a0&redirect_uri=" +
-        window.location.href;
+let clientId =
+    window.location.hostname == "localhost"
+        ? "3fb67bc2b25156f984ec"
+        : "10e8db4ed250e4ac72a0";
+let clientSecret =
+    window.location.hostname == "localhost"
+        ? "6d69ea5e4ba661f14d617db7a6e1258cc96b4175"
+        : "cc14f5e149f83526df2b99ed2c9ace5a41c604e6";
+
+if (!params.code) {
+    window.location.href = `https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=${clientId}`;
 }
 
 console.log("ParamsCode is given");
@@ -30,22 +29,20 @@ fetch(
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            client_id: "10e8db4ed250e4ac72a0",
-            client_secret: "cc14f5e149f83526df2b99ed2c9ace5a41c604e6",
+            client_id: clientId,
+            client_secret: clientSecret,
             code: params.code,
-            redirect_uri: window.location.href,
         }),
     }
 )
     .then((response) => response.json())
     .then((data) => {
         if (!data.access_token) {
-            window.location.href =
-                "https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=10e8db4ed250e4ac72a0&redirect_uri=" +
-                window.location.href;
+            window.location.href = `https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=${clientId}`;
         }
         window.initOctoKit(data.access_token);
         console.log(data);
+        log("Loading repositories...");
         window
             .getRepos()
             .then((response) => {
@@ -61,10 +58,12 @@ fetch(
                 templates.forEach((template) => {
                     addTemplateOption(template);
                 });
+                log("Repositories loaded");
                 console.log(templates);
             })
             .catch((err) => {
                 console.error(err);
+                log("An error occured while fetching your repositories");
                 swal.fire({
                     title: "Error",
                     text: "An error occured while fetching your repositories",
@@ -74,6 +73,7 @@ fetch(
     })
     .catch((err) => {
         console.error(err);
+        log("An error occured while logging you in");
     });
 
 let templateRepos = [];
@@ -89,6 +89,11 @@ const templates = [
     { name: "Nuxt", value: "nuxt" },
 ];
 */
+
+var outputElement = document.getElementById("output");
+var log = (input) => {
+    outputElement.innerText = outputElement.innerText + input + "\n";
+};
 
 const templateContainer = document.getElementById("templates");
 const projectNameInputElement = document.getElementById("projectNameInput");
@@ -149,12 +154,25 @@ projectNameInputElement.addEventListener("input", (e) => {
 
 document.querySelectorAll(".visibilitySwitchButton").forEach((e) => {
     e.addEventListener("click", () => {
-        visibilitySwitchElement.classList.toggle("left-1");
-        visibilitySwitchElement.classList.toggle("left-[calc(50%_-_0.25rem)]");
-        if (visibilitySwitchElement.classList.contains("left-1")) {
-            visibilitySwitchElement.innerHTML = "Public";
+        console.log(e.parentElement.parentElement.lastElementChild);
+        e.parentElement.parentElement.lastElementChild.classList.toggle(
+            "left-1"
+        );
+        e.parentElement.parentElement.lastElementChild.classList.toggle(
+            "left-[calc(50%_-_0.25rem)]"
+        );
+        if (
+            e.parentElement.parentElement.lastElementChild.classList.contains(
+                "left-1"
+            )
+        ) {
+            console.log(1);
+            e.parentElement.parentElement.lastElementChild.innerHTML =
+                e.parentElement.parentElement.firstElementChild.innerHTML;
         } else {
-            visibilitySwitchElement.innerHTML = "Private";
+            console.log(2);
+            e.parentElement.parentElement.lastElementChild.innerHTML =
+                e.parentElement.parentElement.children[1].innerHTML;
         }
     });
 });
@@ -164,6 +182,7 @@ function createCodeSpaceForRepository(id) {
         .createCodespaceForRepo(id)
         .then((response) => {
             console.log("Codespace created successfully", response);
+            log("Codespace created successfully");
             window.location.href = response.data.web_url;
         })
         .catch((err) => {
@@ -193,6 +212,7 @@ createButton.addEventListener("click", async () => {
         });
         return;
     }
+    log("Creating repository from template...");
     window
         .creteRepoFromTemplate(
             templateContainer.value,
@@ -201,6 +221,8 @@ createButton.addEventListener("click", async () => {
         )
         .then(async (response) => {
             console.log("Repository created successfully", response);
+            log("Repository created successfully");
+            log("Creating codespace...");
             new Promise((resolve) => {
                 setTimeout(() => {
                     resolve();
