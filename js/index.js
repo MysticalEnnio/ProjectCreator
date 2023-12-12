@@ -15,7 +15,7 @@ if (!params.code) {
     window.location.href = `https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=${clientId}`;
 }
 
-console.log("ParamsCode is given");
+log("ParamsCode is given");
 
 fetch(
     "https://cors-proxy-bngj.onrender.com/https://github.com/login/oauth/access_token",
