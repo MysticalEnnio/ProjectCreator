@@ -228,6 +228,7 @@ createButton.addEventListener("click", async () => {
                 await navigator.clipboard.writeText(
                     `git clone ${response.data.clone_url}`
                 );
+                log(`git clone ${response.data.clone_url}`);
                 log("git clone url command to clipboard");
                 return;
             }
