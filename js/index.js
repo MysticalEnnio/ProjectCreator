@@ -14,7 +14,10 @@ let clientSecret =
 if (!params.code) {
     window.location.href = `https://github.com/login/oauth/authorize?scope=repo codespace admin:org&client_id=${clientId}`;
 }
-
+let outputElement = document.getElementById("output");
+let log = (input) => {
+    outputElement.innerText = outputElement.innerText + input + "\n";
+};
 log("ParamsCode is given");
 
 fetch(
@@ -89,11 +92,6 @@ const templates = [
     { name: "Nuxt", value: "nuxt" },
 ];
 */
-
-var outputElement = document.getElementById("output");
-var log = (input) => {
-    outputElement.innerText = outputElement.innerText + input + "\n";
-};
 
 const templateContainer = document.getElementById("templates");
 const projectNameInputElement = document.getElementById("projectNameInput");
